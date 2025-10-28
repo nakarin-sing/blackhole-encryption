@@ -1,0 +1,21 @@
+// src/gpu/bh_self_healing_gpu.sycl
+#include <sycl/sycl.hpp>
+#include <vector>
+
+using namespace sycl;
+
+void gpu_rs_encode(queue& q, const uint8_t* in, uint8_t* out, uint8_t* par, size_t len) {
+    buffer<uint8_t> in_buf(in, len);
+    buffer<uint8_t> out_buf(out, len);
+    buffer<uint8_t> par_buf(par, 32);  // RS parity
+
+    q.submit([&](handler& h) {
+        auto in_acc = in_buf.get_access<access::mode::read>(h);
+        auto out_acc = out_buf.get_access<access::mode::write>(h);
+        auto par_acc = par_buf.get_access<access::mode::write>(h);
+        h.parallel_for(range<1>(len), [=](id<1> idx) {
+            out_acc[idx] = in_acc[idx];  // Copy + simple XOR parity
+            if (idx[0] % 8 == 0) par_acc[idx[0] / 8] ^= in_acc[idx];
+        });
+    }).wait();
+}
