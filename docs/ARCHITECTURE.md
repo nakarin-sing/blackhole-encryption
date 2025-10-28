@@ -1,10 +1,7 @@
----
-
 🕳️ Black Hole Encryption v21.8.4 — Technical Architecture
 
+
 > "Post-Quantum Secure, Zero-Copy, Adaptive FEC — Engineered for Reality."
-
-
 
 This document provides a deep technical breakdown of the Black Hole Encryption system, highlighting two key innovations:
 
